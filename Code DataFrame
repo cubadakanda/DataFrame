@@ -1,0 +1,76 @@
+# No. 1
+import pandas as pd
+
+# Baca file Excel
+df_excel = pd.read_excel('data_jumlah_produksi_sampah.xlsx', sheet_name='data')
+df_excel
+
+# No. 2
+# Dari DataFrame yang telah dibuat, hitunglah total produksi sampah di seluruh Kabupaten/Kota di Jawa Barat untuk tahun tertentu. Tampilkan hasilnya.
+tahun_tertentu = 2018
+total_sampah = 0
+for i, row in df_excel.iterrows():
+    if row['tahun'] == tahun_tertentu:
+        total_sampah += row['jumlah_produksi_sampah'] 
+
+print(f"Total produksi sampah di Jawa Barat pada tahun {tahun_tertentu} adalah {total_sampah} TON.")
+
+df_excel = pd.DataFrame([{'Tahun Tertentu': tahun_tertentu, 'Total sampah (Ton)': total_sampah}])
+df_excel.to_csv('No2.csv', index=False)
+df_excel.to_excel('No2.xlsx', index=False)
+
+# No. 3
+# Jumlahkan Data Pertahun
+sampah_per_tahun = {}
+
+for index, row in df_excel.iterrows():
+    tahun = row['tahun']
+    jumlah = row['jumlah_produksi_sampah']
+    if tahun in sampah_per_tahun:
+        sampah_per_tahun[tahun] += jumlah
+    else:
+        sampah_per_tahun[tahun] = jumlah
+
+df_sampah_per_tahun = pd.DataFrame(list(sampah_per_tahun.items()), columns=['Tahun', 'Total Produksi Sampah'])
+print("Total produksi sampah pertahun:")
+print(df_sampah_per_tahun)
+
+df_excel = pd.DataFrame(sampah_per_tahun.items(), columns=['Tahun', 'Total Produksi Sampah'])
+df_excel.to_csv('no3.csv', index=False)
+df_excel.to_excel('no3.xlsx', index=False)
+
+# No. 4
+# Jumlahkan Data Perkota
+jumlah_data_perkota = {}
+
+for i, row in df_excel.iterrows():
+    kota = row['nama_kabupaten_kota']
+    tahun = row['tahun']
+    jumlah = row['jumlah_produksi_sampah']
+    
+    if kota not in jumlah_data_perkota:
+        jumlah_data_perkota[kota] = {}
+    
+    if tahun not in jumlah_data_perkota[kota]:
+        jumlah_data_perkota[kota][tahun] = 0
+    
+    jumlah_data_perkota[kota][tahun] += jumlah
+
+df_jumlah_data_perkota = pd.DataFrame([
+    {'Kabupaten/Kota': kota, 'Tahun': tahun, 'Jumlah Data': jumlah}
+    for kota, data_tahun in jumlah_data_perkota.items()
+    for tahun, jumlah in data_tahun.items()
+])
+
+print("Jumlah data per Kabupaten/Kota:")
+print(df_jumlah_data_perkota)
+
+df_excel = pd.DataFrame([
+    {'Kabupaten/Kota': kota, 'Tahun': tahun, 'Jumlah Data': jumlah}
+    for kota, data_tahun in jumlah_data_perkota.items()
+    for tahun, jumlah in data_tahun.items()
+])
+
+# Simpan hasil ke file CSV dan Excel
+df_excel.to_csv('No4.csv', index=False)
+df_excel.to_excel('No4.xlsx', index=False)
